@@ -19,7 +19,6 @@ const PORT = process.env.PORT || 4000;
 // Connect to DB
 connectDB();
 
-// Create temp directory if it doesn't exist
 const tempDir = path.join(__dirname, 'temp');
 if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
@@ -31,7 +30,7 @@ app.use(fileUpload({
     tempFileDir: tempDir,
     createParentPath: true,
     limits: { 
-        fileSize: 100 * 1024 * 1024 // 100MB max file size
+        fileSize: 100 * 1024 * 1024 
     },
     abortOnLimit: true
 }));
