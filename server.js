@@ -2,7 +2,9 @@ import express from 'express';
 import dotenv from "dotenv";
 import connectDB from './config/db.js';
 import authRoutes from './routes/auth.route.js';
+import userRoutes from './routes/user.route.js';
 import videoRoutes from "./routes/video.route.js";
+import commentRoutes from "./routes/comment.route.js";
 import fileUpload from 'express-fileupload';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -40,7 +42,9 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/videos", videoRoutes);
+app.use("/api/comments", commentRoutes);
 
 // Start server
 app.listen(PORT, () => {
