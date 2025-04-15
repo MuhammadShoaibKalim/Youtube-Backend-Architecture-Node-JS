@@ -1,28 +1,49 @@
 import express from 'express';
-import dotenv from  "dotenv";
+import dotenv from "dotenv";
 import connectDB from './config/db.js';
 import authRoutes from './routes/auth.route.js';
+import videoRoutes from "./routes/video.route.js";
 import fileUpload from 'express-fileupload';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 dotenv.config();
+
 const app = express();
+const PORT = process.env.PORT || 4000;
 
-
-const PORT = 4000 || process.env.PORT;
-
-
+// Connect to DB
 connectDB();
-app.use(express.json());
-app.use(express.urlencoded({
-    extended: true,
-    tempFileDir: '/tmp/',
+
+// Create temp directory if it doesn't exist
+const tempDir = path.join(__dirname, 'temp');
+if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+}
+
+// Configure file upload
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: tempDir,
+    createParentPath: true,
+    limits: { 
+        fileSize: 100 * 1024 * 1024 // 100MB max file size
+    },
+    abortOnLimit: true
 }));
-app.use(fileUpload({useTempFiles: true}));
 
+// Parse JSON bodies
+app.use(express.json());
 
-//Routes
+// Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/videos", videoRoutes);
 
-//App listen
+// Start server
 app.listen(PORT, () => {
-    console.log(`Server is running on :${PORT}`);
+  console.log(`Server is running on port: ${PORT}`);
 });
