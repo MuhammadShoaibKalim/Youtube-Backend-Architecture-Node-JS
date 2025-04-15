@@ -90,7 +90,7 @@ export const register = async (req, res) => {
   }
 };
 
-
+// Create Super Admin (only accessible by Super Admin)
 export const createSuperAdmin = async (req, res) => {
   try {
     const { channelName, phone, password, email } = req.body;
