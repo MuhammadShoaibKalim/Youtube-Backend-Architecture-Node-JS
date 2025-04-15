@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import cloudinary from "../config/cloudinary.js"; 
 import User from "../models/user.model.js";
-
+import  { generateToken } from "../utils/generateToken.util.js"
 
 export const register = async (req, res) => {
   try {
@@ -56,3 +56,66 @@ export const register = async (req, res) => {
     });
   }
 };
+
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required.",
+      });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Invalid email or password", 
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+    const token = generateToken(user);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful!",
+      token: token,
+      user: {
+        _id: user._id,
+        channelName: user.channelName,
+        email: user.email,
+        phone: user.phone,
+        logoId: user.logoId,
+        logoUrl: user.logoUrl,
+        subscribers: user.subscribers,
+        subscribedChannels: user.subscribedChannels,
+      },
+    });
+    
+  } catch (error) {
+    console.log("ERROR", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Something went wrong. Please try again.",
+    });
+  }
+};
+
