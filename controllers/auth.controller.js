@@ -102,7 +102,7 @@ export const createSuperAdmin = async (req, res) => {
       });
     }
 
-    if (req.user.role !== 'superadmin') {
+    if (req.user && req.user.role !== 'superadmin') {
       return res.status(403).json({
         success: false,
         message: "Only Super Admin can create another Super Admin.",
