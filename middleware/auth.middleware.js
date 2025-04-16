@@ -35,7 +35,7 @@ export const checkRole = (...allowedRoles) => {
     if (!allowedRoles.includes(userRole)) {
       return res.status(403).json({
         success: false,
-        message: `Access denied. Only [${allowedRoles.join(", ")}] allowed.`,
+        message: `Access denied. Only [${allowedRoles.join(",")}] allowed.`,
       });
     }
     next();
